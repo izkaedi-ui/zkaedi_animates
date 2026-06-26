@@ -1,0 +1,31 @@
+---
+name: sprite-gates
+on:
+  push: { branches: ["feat/prime-sprite-gen","main"] }
+  pull_request: { branches: ["main"] }
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update -qq && sudo apt-get install -y libxml2-utils && pip install cairosvg pillow
+      - id: loc
+        run: |
+          echo "svg=$(ls out/sprites/*_sprites.svg|head -1)" >>$GITHUB_OUTPUT
+          echo "view=$(ls out/sprites/*_viewer.html|head -1)" >>$GITHUB_OUTPUT
+          echo "scen=$(ls tools/*scenario*.json|head -1)" >>$GITHUB_OUTPUT
+      - name: G1 xml + single xmlns
+        run: |
+          xmllint --noout "${{ steps.loc.outputs.svg }}"
+          test $(head -5 "${{ steps.loc.outputs.svg }}"|grep -oc xmlns=) -eq 1
+      - name: G2 provenance
+        run: |
+          python tools/prime_sprite_gen.py "${{ steps.loc.outputs.scen }}" -o /tmp/r
+          diff -q "${{ steps.loc.outputs.svg }}" "/tmp/r/$(basename ${{ steps.loc.outputs.svg }})"
+      - name: G3 viewer
+        run: test $(grep -oc '<use ' "${{ steps.loc.outputs.view }}") -eq $(grep -oc '<symbol ' "${{ steps.loc.outputs.view }}")
+      - name: G4 visibility+monotonic
+        run: python render_gate.py "${{ steps.loc.outputs.svg }}" "${{ steps.loc.outputs.scen }}" --card 240 --floor 5.0
+---
