@@ -196,8 +196,8 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
                 scale = 3.8 + 2.4 * h0
                 inten = min(1.0, mag * scale)
                 # Lower cull threshold at higher h0 => strictly more visible segments
-                cull = 0.28 - 0.22 * h0
-                op = max(0.12, min(0.98, 0.25 + 0.62 * inten + 0.13 * h0))
+                cull = 0.14 - 0.10 * h0
+                op = max(0.22, min(0.98, 0.34 + 0.5 * inten + 0.12 * h0))
                 if inten > cull:
                     arrows.append((x, y, x2, y2, round(op, 4)))
 
@@ -218,7 +218,7 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
         for (x, y, x2, y2, op) in arrows:
             d = f"M {x:.1f} {y:.1f} L {x2:.1f} {y2:.1f}"
             sym_lines.append(
-                f'    <path d="{d}" stroke="url(#glowGrad)" stroke-width="0.55" opacity="{op:.3f}" />'
+                f'    <path d="{d}" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="{op:.3f}" />'
             )
         # tracers group(s)
         dur = max(2.2, round(7.0 - 4.0 * h0, 2))
