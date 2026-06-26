@@ -1,0 +1,58 @@
+name: "Copilot Setup Steps"
+
+# This workflow configures the environment for the GitHub Copilot coding agent.
+# The agent runs these steps BEFORE its firewall is enabled, so use this file
+# to pre-fetch refs, install dependencies, or warm caches as needed.
+#
+# Docs:
+#   - Setup steps:    https://gh.io/copilot/actions-setup-steps
+#   - Firewall config: https://gh.io/copilot/firewall-config
+
+on:
+  # Allow manual runs so you can validate the setup steps from the Actions tab.
+  workflow_dispatch:
+
+  # Validate this workflow whenever it changes.
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be named exactly `copilot-setup-steps` for the coding agent
+  # to pick it up. Do not rename it.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    # Keep permissions minimal; broaden only if your setup steps need more.
+    permissions:
+      contents: read
+
+    steps:
+      # Full-history, multi-branch checkout so refs like `main` resolve locally.
+      # This silences the agent's
+      #   "fatal: ambiguous argument 'main': unknown revision ..."
+      # errors that come from `git diff --name-only <sha> main`.
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Explicitly fetch the default branch ref in case the agent's working
+      # checkout is shallow or single-branch.
+      - name: Ensure default branch ref is available
+        run: |
+          git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main || true
+          git branch --force main origin/main || true
+          git rev-parse --verify main
+
+      # This repo is a static HTML/skill project with no package manager or
+      # build step, so there are no dependencies to install here. Add any
+      # required setup (e.g. tooling, caches, allowlisted network calls) above
+      # this comment as the project grows.
+      - name: Report environment
+        run: |
+          echo "Default branch resolved to: $(git rev-parse --abbrev-ref main || echo 'unknown')"
+          echo "No dependencies to install for this static HTML project."
