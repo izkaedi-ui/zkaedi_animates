@@ -1,0 +1,49 @@
+{
+  "scenario": "ML training lifecycle",
+  "seed": 4488,
+  "palette": ["#ff007f", "#00ffff"],
+  "nodes": [
+    {
+      "id": "data",
+      "title": "DATA INGEST",
+      "h0": 0.25,
+      "glyph": "layered grid with peripheral sources",
+      "tracers": ["LOAD", "BATCH"]
+    },
+    {
+      "id": "model",
+      "title": "MODEL INIT",
+      "h0": 0.35,
+      "glyph": "random weights lattice",
+      "tracers": ["INIT", "PARAM"]
+    },
+    {
+      "id": "forward",
+      "title": "FORWARD PASS",
+      "h0": 0.55,
+      "glyph": "layered flow with activation peaks",
+      "tracers": ["ACT", "LOGITS"]
+    },
+    {
+      "id": "loss",
+      "title": "LOSS COMPUTE",
+      "h0": 0.70,
+      "glyph": "central peak basin",
+      "tracers": ["ERR", "GRAD"]
+    },
+    {
+      "id": "train",
+      "title": "GRADIENT DESCENT",
+      "h0": 1.00,
+      "glyph": "deep central basin with inspiraling arms",
+      "tracers": ["FWD", "BACK / STEP"]
+    },
+    {
+      "id": "eval",
+      "title": "INFERENCE",
+      "h0": 0.45,
+      "glyph": "smooth outward flow field",
+      "tracers": ["PRED", "CONF"]
+    }
+  ]
+}
