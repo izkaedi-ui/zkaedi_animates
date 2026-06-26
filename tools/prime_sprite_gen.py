@@ -214,12 +214,12 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
         sym_lines.append(
             f'    <rect x="0" y="0" width="{width}" height="{height}" fill="#05070f" />'
         )
-        # quiver arrows wrapped ONLY in fieldGlow; tracers MUST remain plain <g> with no attrs
-        sym_lines.append('    <g filter="url(#fieldGlow)">')
+        # quiver arrows in plain <g> (no attrs, baked stroke); tracers MUST remain plain <g> with no attrs
+        sym_lines.append('    <g>')
         for (x, y, x2, y2, op) in arrows:
             d = f"M {x:.1f} {y:.1f} L {x2:.1f} {y2:.1f}"
             sym_lines.append(
-                f'    <path d="{d}" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="{op:.3f}" />'
+                f'    <path d="{d}" stroke="url(#glowGrad)" stroke-width="3" opacity="{op:.3f}" />'
             )
         sym_lines.append('    </g>')
         # tracers group(s)
@@ -262,16 +262,6 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
         f'    <stop offset="100%" stop-color="{p1}" stop-opacity="0.65"/>\n'
         "  </linearGradient>"
     )
-    field_glow = (
-        '  <filter id="fieldGlow" x="-50%" y="-50%" width="200%" height="200%">\n'
-        '    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="coloredBlur"/>\n'
-        '    <feMerge>\n'
-        '      <feMergeNode in="coloredBlur"/>\n'
-        '      <feMergeNode in="SourceGraphic"/>\n'
-        '    </feMerge>\n'
-        '  </filter>'
-    )
-
     # Assemble final SVG - EXACTLY ONE xmlns on root, no duplicates anywhere
     svg_parts = []
     svg_parts.append('<?xml version="1.0" encoding="UTF-8"?>')
@@ -279,12 +269,10 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
     svg_parts.append('<svg xmlns="http://www.w3.org/2000/svg" style="display:none" width="0" height="0">')
     svg_parts.append("  <defs>")
     svg_parts.append(grad)
-    svg_parts.append(field_glow)
     svg_parts.extend(motion_defs)
     svg_parts.append("  </defs>")
     svg_parts.extend(symbols)
     svg_parts.append("</svg>")
-
     return "\n".join(svg_parts)
 
 
@@ -320,7 +308,7 @@ def build_viewer_html(scenario: str, nodes: list, svg_library: str) -> str:
 <title>🔱 ZKAEDI PRIME // {upper_scenario}</title>
 <style>
 :root {{ --bg:#04030a; --c:#00ffff; --m:#ff007f; --g:#112233; }}
-@media (prefers-reduced-motion: reduce) {{ .bg-grid, .card, .field {{ animation:none !important; transition:none !important; }} }}
+@media (prefers-reduced-motion: reduce) {{ .bg-grid, .card, .field {{ animation:none !important; transition:none !important; filter:contrast(1.05) !important; }} }}
 * {{ box-sizing:border-box; }}
 body {{ margin:0; background:var(--bg); color:#ccd; font-family:monospace; overflow-x:hidden; }}
 a {{ color:var(--c); text-decoration:none; }} a:hover {{ color:var(--m); }}
@@ -336,7 +324,7 @@ a {{ color:var(--c); text-decoration:none; }} a:hover {{ color:var(--m); }}
 .showcase {{ max-width:1280px; margin:0 auto; padding:30px 20px; }}
 .cards {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:24px; }}
 .card {{ background:#06050f; border:1px solid #1a1f2e; padding:8px; position:relative; overflow:hidden; cursor:pointer; transition: transform .15s, box-shadow .15s, filter .2s; }}
-.card .field {{ width:100%; height:auto; display:block; background:#020206; filter:contrast(1.05); }}
+.card .field {{ width:100%; height:auto; display:block; background:#020206; filter:contrast(1.05) drop-shadow(0 0 2px #00ffff); }}
 .card .info {{ padding:10px 6px 4px; }}
 .card .title {{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#fff; margin-bottom:6px; }}
 .card .meter {{ height:3px; background:#1a1f2e; position:relative; overflow:hidden; margin:4px 0; }}
