@@ -1,4 +1,12 @@
-# ZKAEDI PRIME Rig Studio
+# 🔱 ZKAEDI PRIME // SPRITE FIELDS
+
+Deterministic Hamiltonian energy fields • 16px grid • bloom + showcase.
+
+![preview](showcase/preview.png)
+
+**[LIVE DEMO](https://izkaedi-ui.github.io/zkaedi_animates/)** • branch `feat/sprite-showcase`
+
+**Gates:** XML ✓ Provenance ✓ Viewer (1×<use>) ✓ Visibility ✓ Monotonicity ✓ (floor 5.0)
 
 A browser-based rigging and animation studio for `.glb` / `.gltf` character meshes.
 It combines auto-rigging, FK/IK posing, weight painting, procedural motion, mesh tools,
