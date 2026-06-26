@@ -214,12 +214,14 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
         sym_lines.append(
             f'    <rect x="0" y="0" width="{width}" height="{height}" fill="#05070f" />'
         )
-        # quiver arrows (many small paths for per-segment opacity)
+        # quiver arrows wrapped ONLY in fieldGlow; tracers MUST remain plain <g> with no attrs
+        sym_lines.append('    <g filter="url(#fieldGlow)">')
         for (x, y, x2, y2, op) in arrows:
             d = f"M {x:.1f} {y:.1f} L {x2:.1f} {y2:.1f}"
             sym_lines.append(
                 f'    <path d="{d}" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="{op:.3f}" />'
             )
+        sym_lines.append('    </g>')
         # tracers group(s)
         dur = max(2.2, round(7.0 - 4.0 * h0, 2))
         for idx, tr in enumerate(tracers):
@@ -260,6 +262,15 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
         f'    <stop offset="100%" stop-color="{p1}" stop-opacity="0.65"/>\n'
         "  </linearGradient>"
     )
+    field_glow = (
+        '  <filter id="fieldGlow" x="-50%" y="-50%" width="200%" height="200%">\n'
+        '    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="coloredBlur"/>\n'
+        '    <feMerge>\n'
+        '      <feMergeNode in="coloredBlur"/>\n'
+        '      <feMergeNode in="SourceGraphic"/>\n'
+        '    </feMerge>\n'
+        '  </filter>'
+    )
 
     # Assemble final SVG - EXACTLY ONE xmlns on root, no duplicates anywhere
     svg_parts = []
@@ -268,6 +279,7 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
     svg_parts.append('<svg xmlns="http://www.w3.org/2000/svg" style="display:none" width="0" height="0">')
     svg_parts.append("  <defs>")
     svg_parts.append(grad)
+    svg_parts.append(field_glow)
     svg_parts.extend(motion_defs)
     svg_parts.append("  </defs>")
     svg_parts.extend(symbols)
@@ -277,55 +289,116 @@ def build_sprite_svg(scenario: str, seed: int, palette: list, nodes: list) -> st
 
 
 def build_viewer_html(scenario: str, nodes: list, svg_library: str) -> str:
-    """Standalone viewer that inlines the display:none library + shows <use> cards."""
+    """Showcase viewer: inlines display:none lib (1 xmlns), exactly 1 static <use> per symbol (G3 safe).
+    Aesthetic: #04030a base, #00ffff/#ff007f, mono UPPER, glows, no emoji but 🔱, respects reduced-motion.
+    Fullscreen via JS cloneNode of card svg (no extra static <use>). """
     slug = re.sub(r"[^a-z0-9]+", "_", scenario.lower()).strip("_")
-    title = f"PRIME Sprite Sheet — {scenario}"
+    upper_scenario = scenario.upper()
 
     cards = []
     for node in nodes:
         nid = node["id"]
         t = xml_escape(node["title"])
-        h = node["h0"]
+        h = float(node["h0"])
+        pct = int(h * 100)
         cards.append(f"""
-    <div class="card">
-      <svg class="sprite" width="220" height="220" viewBox="0 0 800 800">
-        <use href="#{nid}" />
-      </svg>
-      <div class="caption">{t} <span class="h0">h0={h:.2f}</span></div>
+    <div class="card" data-id="{nid}">
+      <svg class="field" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet"><use href="#{nid}" /></svg>
+      <div class="info">
+        <div class="title">{t}</div>
+        <div class="meter" title="h0={h:.2f}"><div class="fill" style="width:{pct}%"></div></div>
+        <div class="hval">H0 = {h:.2f}</div>
+      </div>
     </div>""")
-
     cards_html = "\n".join(cards)
 
-    # Inline the exact library (already contains exactly one xmlns)
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{xml_escape(title)}</title>
-  <style>
-    body {{ background:#0a0c12; color:#ccd; font-family:monospace; margin:0; padding:20px; }}
-    h1 {{ color:#ff007f; font-size:18px; margin:0 0 12px; }}
-    .meta {{ color:#66a; font-size:11px; margin-bottom:16px; }}
-    .grid {{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:18px; }}
-    .card {{ background:#11151f; border:1px solid #223; border-radius:4px; padding:8px; text-align:center; }}
-    .sprite {{ background:#05070f; display:block; margin:0 auto; }}
-    .caption {{ margin-top:6px; font-size:11px; color:#99a; }}
-    .h0 {{ color:#00ffff; margin-left:6px; }}
-    .lib {{ display:none; }}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🔱 ZKAEDI PRIME // {upper_scenario}</title>
+<style>
+:root {{ --bg:#04030a; --c:#00ffff; --m:#ff007f; --g:#112233; }}
+@media (prefers-reduced-motion: reduce) {{ .bg-grid, .card, .field {{ animation:none !important; transition:none !important; }} }}
+* {{ box-sizing:border-box; }}
+body {{ margin:0; background:var(--bg); color:#ccd; font-family:monospace; overflow-x:hidden; }}
+a {{ color:var(--c); text-decoration:none; }} a:hover {{ color:var(--m); }}
+.hero {{ position:relative; padding:60px 20px 40px; text-align:center; border-bottom:1px solid #112; }}
+.hero h1 {{ margin:0; font-size:28px; letter-spacing:6px; text-transform:uppercase; color:#fff; text-shadow:0 0 10px var(--c),0 0 20px var(--m); }}
+.hero .sub {{ margin:8px 0 4px; font-size:13px; letter-spacing:3px; color:#99a; }}
+.hero .pal {{ font-size:11px; color:#556; letter-spacing:2px; }}
+.bg-grid {{ position:fixed; inset:0; z-index:-1; opacity:0.08; background:
+  linear-gradient(transparent 50%, var(--c) 50%) 0 0 / 100% 24px,
+  linear-gradient(90deg, transparent 50%, var(--c) 50%) 0 0 / 24px 100%;
+  animation:drift 22s linear infinite; }}
+@keyframes drift {{ to {{ background-position: 48px 48px, 48px 48px; }} }}
+.showcase {{ max-width:1280px; margin:0 auto; padding:30px 20px; }}
+.cards {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:24px; }}
+.card {{ background:#06050f; border:1px solid #1a1f2e; padding:8px; position:relative; overflow:hidden; cursor:pointer; transition: transform .15s, box-shadow .15s, filter .2s; }}
+.card .field {{ width:100%; height:auto; display:block; background:#020206; filter:contrast(1.05); }}
+.card .info {{ padding:10px 6px 4px; }}
+.card .title {{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#fff; margin-bottom:6px; }}
+.card .meter {{ height:3px; background:#1a1f2e; position:relative; overflow:hidden; margin:4px 0; }}
+.card .meter .fill {{ height:100%; background:linear-gradient(90deg,var(--m),var(--c)); transition:width .3s; }}
+.card .hval {{ font-size:10px; color:#88a; letter-spacing:1px; }}
+/* spotlight on hover */
+.cards:hover .card {{ filter:brightness(.35) saturate(.6); }}
+.cards:hover .card:hover {{ filter:brightness(1.15) saturate(1.1); transform:scale(1.01); box-shadow:0 0 0 1px var(--c), 0 0 18px -2px var(--c); z-index:2; }}
+.overlay {{ position:fixed; inset:0; background:rgba(4,3,10,0.96); display:none; align-items:center; justify-content:center; z-index:999; }}
+.overlay.active {{ display:flex; }}
+.overlay svg {{ width:92vw; max-width:820px; height:auto; background:#020206; border:1px solid #112; box-shadow:0 0 40px -8px var(--m); }}
+.overlay .close {{ position:absolute; top:20px; right:30px; color:#fff; font-size:13px; letter-spacing:2px; cursor:pointer; border:1px solid #334; padding:2px 10px; }}
+</style>
 </head>
 <body>
-  <h1>{xml_escape(title)}</h1>
-  <div class="meta">Generated programmatically • 800×800 symbols • deterministic Hamiltonian fields</div>
-  <div class="grid">
+<div class="bg-grid"></div>
+<header class="hero">
+  <h1>🔱 ZKAEDI PRIME // {upper_scenario}</h1>
+  <div class="sub">DETERMINISTIC HAMILTONIAN ENERGY FIELDS • 16PX GRID • T=4+8H0 EVOLUTION</div>
+  <div class="pal">ZKAEDI ↔ IDEAKZ</div>
+</header>
+<main class="showcase">
+  <div class="cards" id="cards">
 {cards_html}
   </div>
+</main>
+<footer style="text-align:center;padding:30px 10px 40px;font-size:10px;color:#445;letter-spacing:1px;">
+  6 SYMBOLS • SEED 4488 • ONE <use> PER FIELD • GATES: XML • PROVENANCE • VIEWER • VISIBILITY • MONOTONIC
+</footer>
 
-  <!-- Inlined display:none PRIME library (single xmlns on root) -->
-  <div class="lib">
+<!-- Inlined display:none library: EXACTLY one xmlns on root; exactly one static <use> per symbol -->
+<div class="lib" style="display:none">
 {svg_library}
-  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="close" onclick="closeOverlay()">ESC / CLICK TO CLOSE</div></div>
+
+<script>
+const cards = document.querySelectorAll('.card');
+const overlay = document.getElementById('overlay');
+
+function openOverlay(el) {{
+  overlay.innerHTML = '<div class="close" onclick="closeOverlay()">ESC / CLICK TO CLOSE</div>';
+  const srcSvg = el.querySelector('.field');
+  if (!srcSvg) return;
+  const clone = srcSvg.cloneNode(true);
+  clone.style.width = '92vw';
+  clone.style.maxWidth = '820px';
+  clone.style.height = 'auto';
+  clone.style.background = '#020206';
+  overlay.appendChild(clone);
+  overlay.classList.add('active');
+  overlay.onclick = (e) => {{ if (e.target === overlay) closeOverlay(); }};
+  document.addEventListener('keydown', function esc(e){{ if(e.key==='Escape'){{ closeOverlay(); document.removeEventListener('keydown',esc); }} }}, {{once:true}});
+}}
+function closeOverlay() {{
+  overlay.classList.remove('active');
+  overlay.innerHTML = '<div class="close" onclick="closeOverlay()">ESC / CLICK TO CLOSE</div>';
+}}
+cards.forEach(c => c.addEventListener('click', () => openOverlay(c)));
+document.addEventListener('keydown', e => {{ if(e.key.toLowerCase()==='f' && document.activeElement.tagName==='BODY') cards[0].click(); }});
+</script>
 </body>
 </html>
 """

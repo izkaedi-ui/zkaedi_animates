@@ -6,6 +6,13 @@
     <stop offset="0%" stop-color="#ff007f" stop-opacity="0.95"/>
     <stop offset="100%" stop-color="#00ffff" stop-opacity="0.65"/>
   </linearGradient>
+  <filter id="fieldGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="coloredBlur"/>
+    <feMerge>
+      <feMergeNode in="coloredBlur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
   <path id="motion-data" d="M 538.5,400.0 L 553.7,416.6 L 558.4,434.8 L 549.8,450.9 L 531.9,462.5 L 512.3,470.7 L 496.9,479.4 L 486.2,492.1 L 476.2,508.2 L 462.1,522.9 L 442.4,529.9 L 420.2,526.0 L 400.0,513.6 L 384.1,499.2 L 370.8,489.5 L 356.1,487.0 L 337.7,488.5 L 317.6,488.1 L 301.0,481.2 L 292.6,467.6 L 292.1,451.1 L 293.9,436.0 L 290.9,424.0 L 279.1,413.1 L 261.5,400.0 L 246.3,383.4 L 241.6,365.2 L 250.2,349.1 L 268.1,337.5 L 287.7,329.3 L 303.1,320.6 L 313.8,307.9 L 323.8,291.8 L 337.9,277.1 L 357.6,270.1 L 379.8,274.0 L 400.0,286.4 L 415.9,300.8 L 429.2,310.5 L 443.9,313.0 L 462.3,311.5 L 482.4,311.9 L 499.0,318.8 L 507.4,332.4 L 507.9,348.9 L 506.1,364.0 L 509.1,376.0 L 520.9,386.9 Z" fill="none" />
   <path id="motion-model" d="M 532.9,400.0 L 538.9,415.0 L 541.8,431.2 L 541.0,447.9 L 536.0,464.4 L 526.8,479.8 L 513.7,493.2 L 497.3,504.0 L 478.5,511.5 L 458.4,515.6 L 438.0,516.3 L 418.3,513.9 L 400.0,509.0 L 383.6,502.2 L 369.2,494.2 L 356.7,485.7 L 345.6,477.2 L 335.5,468.9 L 325.8,460.9 L 315.9,452.9 L 305.8,444.6 L 295.4,435.5 L 285.1,425.2 L 275.4,413.5 L 267.1,400.0 L 261.1,385.0 L 258.2,368.8 L 259.0,352.1 L 264.0,335.6 L 273.2,320.2 L 286.3,306.8 L 302.7,296.0 L 321.5,288.5 L 341.6,284.4 L 362.0,283.7 L 381.7,286.1 L 400.0,291.0 L 416.4,297.8 L 430.8,305.8 L 443.3,314.3 L 454.4,322.8 L 464.5,331.1 L 474.2,339.1 L 484.1,347.1 L 494.2,355.4 L 504.6,364.5 L 514.9,374.8 L 524.6,386.5 Z" fill="none" />
   <path id="motion-forward" d="M 536.7,400.0 L 551.4,416.3 L 555.8,434.2 L 547.0,449.9 L 529.0,461.1 L 509.5,468.9 L 494.3,477.3 L 484.0,489.8 L 474.5,505.8 L 460.9,520.5 L 441.7,527.8 L 419.9,524.2 L 400.0,512.1 L 384.3,498.1 L 371.0,488.8 L 356.3,486.6 L 337.8,488.3 L 317.6,488.1 L 301.0,481.2 L 292.6,467.6 L 292.3,451.0 L 294.4,435.9 L 291.7,423.8 L 280.4,412.9 L 263.3,400.0 L 248.6,383.7 L 244.2,365.8 L 253.0,350.1 L 271.0,338.9 L 290.5,331.1 L 305.7,322.7 L 316.0,310.2 L 325.5,294.2 L 339.1,279.5 L 358.3,272.2 L 380.1,275.8 L 400.0,287.9 L 415.7,301.9 L 429.0,311.2 L 443.7,313.4 L 462.2,311.7 L 482.4,311.9 L 499.0,318.8 L 507.4,332.4 L 507.7,349.0 L 505.6,364.1 L 508.3,376.2 L 519.6,387.1 Z" fill="none" />
@@ -15,6 +22,7 @@
   </defs>
   <symbol id="data" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 7.7 8.7" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.484" />
     <path d="M 16.0 0.0 L 24.4 8.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.489" />
     <path d="M 32.0 0.0 L 41.7 6.4" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.469" />
@@ -1683,6 +1691,7 @@
     <path d="M 768.0 800.0 L 759.9 791.7" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.471" />
     <path d="M 784.0 800.0 L 775.0 792.7" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.488" />
     <path d="M 800.0 800.0 L 791.6 792.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.488" />
+    </g>
     <g>
       <animateMotion dur="6.0s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-data"/>
@@ -1702,6 +1711,7 @@
   </symbol>
   <symbol id="model" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 6.4 10.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.613" />
     <path d="M 16.0 0.0 L 22.3 10.1" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.592" />
     <path d="M 32.0 0.0 L 38.4 10.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.570" />
@@ -3762,6 +3772,7 @@
     <path d="M 768.0 800.0 L 757.3 794.9" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.485" />
     <path d="M 784.0 800.0 L 773.3 794.9" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.499" />
     <path d="M 800.0 800.0 L 788.2 798.3" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.479" />
+    </g>
     <g>
       <animateMotion dur="5.6s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-model"/>
@@ -3781,6 +3792,7 @@
   </symbol>
   <symbol id="forward" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 7.1 10.2" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.649" />
     <path d="M 16.0 0.0 L 23.4 9.9" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.595" />
     <path d="M 32.0 0.0 L 39.5 9.8" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.649" />
@@ -6251,6 +6263,7 @@
     <path d="M 768.0 800.0 L 760.6 790.1" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.643" />
     <path d="M 784.0 800.0 L 774.1 792.5" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.593" />
     <path d="M 800.0 800.0 L 792.2 790.4" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.713" />
+    </g>
     <g>
       <animateMotion dur="4.8s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-forward"/>
@@ -6270,6 +6283,7 @@
   </symbol>
   <symbol id="loss" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 7.0 10.7" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.790" />
     <path d="M 16.0 0.0 L 23.1 10.6" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.879" />
     <path d="M 32.0 0.0 L 40.8 9.2" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.791" />
@@ -8826,6 +8840,7 @@
     <path d="M 768.0 800.0 L 760.7 789.5" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.865" />
     <path d="M 784.0 800.0 L 777.0 789.4" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.819" />
     <path d="M 800.0 800.0 L 793.0 789.3" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.773" />
+    </g>
     <g>
       <animateMotion dur="4.2s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-loss"/>
@@ -8845,6 +8860,7 @@
   </symbol>
   <symbol id="train" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 7.8 11.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.960" />
     <path d="M 16.0 0.0 L 25.3 9.7" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.843" />
     <path d="M 32.0 0.0 L 40.9 10.1" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.914" />
@@ -11446,6 +11462,7 @@
     <path d="M 768.0 800.0 L 756.5 792.9" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.826" />
     <path d="M 784.0 800.0 L 773.6 791.3" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.887" />
     <path d="M 800.0 800.0 L 790.4 790.5" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.893" />
+    </g>
     <g>
       <animateMotion dur="3.0s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-train"/>
@@ -11465,6 +11482,7 @@
   </symbol>
   <symbol id="eval" viewBox="0 0 800 800">
     <rect x="0" y="0" width="800" height="800" fill="#05070f" />
+    <g filter="url(#fieldGlow)">
     <path d="M 0.0 0.0 L 8.0 9.1" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.619" />
     <path d="M 16.0 0.0 L 24.7 8.4" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.578" />
     <path d="M 32.0 0.0 L 38.8 10.0" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.617" />
@@ -13813,6 +13831,7 @@
     <path d="M 768.0 800.0 L 761.8 789.6" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.546" />
     <path d="M 784.0 800.0 L 774.5 792.5" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.531" />
     <path d="M 800.0 800.0 L 790.7 792.2" stroke="url(#glowGrad)" stroke-width="1.3" vector-effect="non-scaling-stroke" opacity="0.539" />
+    </g>
     <g>
       <animateMotion dur="5.2s" begin="0.00s" repeatCount="indefinite">
         <mpath href="#motion-eval"/>
